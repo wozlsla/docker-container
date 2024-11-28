@@ -1,0 +1,28 @@
+services:
+
+  webserver:
+    image: nodeserver:1
+    # ports:
+    #   - 8080:8080
+    depends_on:
+      - db
+    deploy:
+      mode: replicated
+      replicas: 3
+
+  nginx:
+    image: nginx:1
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx/myconfig.conf:/etc/nginx/conf.d/default.conf
+
+  db:
+    image: postgres:17-alpine
+    ports:
+      - 5432:5432
+    # env_file:
+    #   - fileName.env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
