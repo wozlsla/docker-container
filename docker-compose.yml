@@ -9,13 +9,17 @@ services:
     deploy:
       mode: replicated
       replicas: 3
+    networks:
+      - mynet1
+      - mynet2
 
   nginx:
     image: nginx:1
     ports:
       - 80:80
-    volumes:
-      - ./nginx/myconfig.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - mynet1
+    restart: always
 
   db:
     image: postgres:17-alpine
@@ -26,3 +30,17 @@ services:
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - test_vol:/var/lib/postgresql/data
+      # - HOST_PATH:/var/lib/postgresql/data # bind mount (내가 원하는 경로랑 싱크)
+    networks:
+      - mynet2
+
+networks:
+  mynet1:
+  mynet2:
+
+
+volumes:
+  test_vol:
+    external: true # 만들어둔 볼륨 사용하려면 필요. 만약 이 항목이 없으면 docker_test_val 로 생성됨.
