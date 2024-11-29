@@ -2,8 +2,19 @@ services:
 
   webserver:
     image: nodeserver:1
+    build: .
     # ports:
     #   - 8080:8080
+    develop:
+      watch:
+        - action: sync+restart # 복붙 + 재시작
+          path: . # 어떤 파일을
+          target: /app # 어디에
+          ignore:
+            - node_modules/ # 제외 (dockerignore가 있으면 필요 X)
+        - action: rebuild # path 파일들 변경시 자동으로 docker build
+          path: package.json
+
     depends_on:
       - db
     deploy:
